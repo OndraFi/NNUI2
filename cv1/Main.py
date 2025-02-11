@@ -87,7 +87,7 @@ plt.show()
 tensor_3d = np.random.rand(5,10,10)
 fig, axes = plt.subplots(1,5,figsize=(15,3))
 for i in range(5):
-    axes[i].imshow(tensor_3d[i,:,:], camp="viridis")
+    axes[i].imshow(tensor_3d[i,:,:], cmap="viridis")
     axes[i].set_title(f"Vrstva{i}")
     axes[i].axis("off")
 plt.show()
