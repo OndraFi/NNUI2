@@ -1,38 +1,33 @@
-# Experimenty s perceptronem
+# Záznam do deníku – Perceptron a Iris dataset
 
-## Popis úlohy
-Cílem experimentu je trénovat jednoduchý perceptron s aktivační funkcí, která vrací **-1** pokud je potenciál menší než 0, a **1** jinak, na datasetu **Breast Cancer** načteného pomocí scikit-learn. Provedeno bylo 10 tréninkových běhů se stejnými parametry. Byl zaznamenán průběh tréninkové chyby, uloženy hodnoty vah a biasu a následně vyhodnocena testovací přesnost.
+## 🧠 Popis úlohy
+Cílem bylo implementovat jednoduchý perceptron a vyzkoušet jeho schopnosti při binární klasifikaci dat z veřejného datasetu **Iris**. Zaměřili jsme se pouze na rozlišení druhu *setosa* (třída 0) proti ostatním druhům (binární klasifikace).
 
-## Parametry trénování
-- Počet epoch: 50
-- Koeficient rychlosti učení: 0.05
-- Počet běhů: 20
+## 🔢 Parametry trénování
+- Dataset: [Iris (UCI)](https://archive.ics.uci.edu/dataset/53/iris)
+- Počet trénování: **10**
+- Počet epoch: **100**
+- Learning rate: **0.1**
+- Aktivace: `step function` (0/1)
+- Rozdělení dat: `80 %` trénink, `20 %` test
+- Normalizace vstupů: `StandardScaler()`
 
-## Výsledky
-### Testovací přesnosti jednotlivých modelů:
-- Model 1: 0.9122807017543859
-- Model 2: 0.8596491228070176
-- Model 3: 0.8508771929824561
-- Model 4: 0.9122807017543859
-- Model 5: 0.8596491228070176
-- Model 6: 0.9122807017543859
-- Model 7: 0.8245614035087719
-- Model 8: 0.9649122807017544
-- Model 9: 0.9122807017543859
-- Model 10: 0.8157894736842105
-- Model 11: 0.9122807017543859
-- Model 12: 0.9122807017543859
-- Model 13: 0.8157894736842105
-- Model 14: 0.9122807017543859
-- Model 15: 0.8070175438596491
-- Model 16: 0.8596491228070176
-- Model 17: 0.8596491228070176
-- Model 18: 0.8421052631578947
-- Model 19: 0.9122807017543859
-- Model 20: 0.8596491228070176
+## 🧪 Výsledky experimentu
+- Nejlepší model byl získán při běhu č. **0**
+- Přesnost na testovací množině: **100.0%**
+- Váhy nejlepšího modelu:
+```python
+[-0.19698594, -0.70267971, 0.58297209, -0.63457697, -0.11007498]
+```
 
-### Nejlepší model: Model 8
-### Vizualizace
-![Tréninková chyba](../images/model8_training_error.png)
+### 📊 Boxplot trénovacích chyb (posledních 10 epoch)
+![Boxplot trénovacích chyb](./images/perceptron_boxplot.png)
 
-![Boxplot testovací přesnosti](../images/test_accuracy_boxplot.png)
+## 💾 Uložené soubory
+- `errors_run_*.npy` – průběh trénovacích chyb
+- `weights_run_*.npy` – váhy modelů
+- `perceptron_boxplot.png` – grafické znázornění chyb
+
+---
+
+*Záznam vygenerován: 2025-03-30 19:15:25*
