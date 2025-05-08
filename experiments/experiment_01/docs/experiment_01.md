@@ -21,7 +21,7 @@ Cílem bylo implementovat jednoduchý perceptron a vyzkoušet jeho schopnosti p�
 ```
 
 ### 📊 Boxplot trénovacích chyb (posledních 10 epoch)
-![Boxplot trénovacích chyb](./images/perceptron_boxplot.png)
+![Boxplot trénovacích chyb](../images/perceptron_boxplot.png)
 
 ## 💾 Uložené soubory
 - `errors_run_*.npy` – průběh trénovacích chyb

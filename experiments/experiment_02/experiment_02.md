@@ -33,14 +33,14 @@ Pro každý model jsme zaznamenali průběh trénovací chyby a finální MSE.
 ## 📊 Výsledky
 
 ### Trénovací chyba (MSE) – posledních 100 epoch:
-![Boxplot trénovací chyby](boxplot.png)
+![Boxplot trénovací chyby](./images/boxplot.png)
 
 ### Nejlepší model
 - Počet neuronů ve skryté vrstvě: **16**
 - Finální trénovací chyba (MSE): **0.1247**
 
 ### Porovnání výstupu nejlepšího modelu s funkcí `sin(x)`:
-![Predikce nejlepšího modelu](best_model_prediction.png)
+![Predikce nejlepšího modelu](./images/best_model_prediction.png)
 
 ## 💾 Hodnoty modelu
 Model uložen do souboru: `model_hidden_16.npz`

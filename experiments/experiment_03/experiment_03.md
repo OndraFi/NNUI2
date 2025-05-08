@@ -1,69 +1,77 @@
 # Záznam do deníku – Tvorba FFNN pomocí Keras (sekvenční model)
 
 ## Zadání
-- Vyzkoušet nástroje knihovny Keras pro tvorbu neuronových sítí.
-- Aplikovat na úlohu klasifikace (Iris dataset).
-- Připravit data pro trénování, validaci a testování.
-- Navrhnout 5 různých topologií, každou trénovat 10krát.
-- Vytvořit boxplot graf výsledků a uložit nejlepší model.
+- Seznámení se s tvorbou dopředné neuronové sítě (Feedforward Neural Network – FFNN) pomocí sekvenčního modelu v Keras.
+- Návrh více topologií a jejich vyhodnocení na klasifikační úloze.
+- Experimentování se stabilitou trénování pomocí více běhů.
+- Vyhodnocení nejlepšího modelu.
 
 ---
 
-## Použitá knihovna
-- **TensorFlow 2.19** s podporou GPU (CUDA 12.2, cuDNN 8.9)
-- **Keras Sequential API**
+## Použité knihovny
+- Python 3.11
+- TensorFlow 2.19 (běh na CPU)
+- Keras Sequential API
+- scikit-learn
+- matplotlib
 
 ---
 
 ## Úloha
-Byla použita klasifikační úloha s datovou sadou **Iris**.  
-Cílem bylo předpovědět druh květiny na základě 4 měřených znaků (délka a šířka kališního a korunního lístku).
+- Byla použita klasifikační úloha rozpoznávání květin pomocí datasetu Iris.
+- Úkolem bylo klasifikovat vzorek do jedné ze tří tříd na základě čtyř numerických atributů.
 
 ---
 
 ## Příprava dat
-- Normalizace vstupních dat pomocí `StandardScaler`.
-- One-hot encoding cílových tříd pomocí `LabelBinarizer`.
-- Rozdělení na trénovací (60 %), validační (20 %) a testovací (20 %) sady.
+- Dataset Iris byl normalizován pomocí `StandardScaler`.
+- Cílové hodnoty byly zakódovány pomocí `LabelBinarizer` (one-hot encoding).
+- Data byla rozdělena na:
+  - 60 % trénovací sada
+  - 20 % validační sada
+  - 20 % testovací sada
 
 ---
 
-## Navržené topologie neuronových sítí
+## Topologie modelů
+Pět různých FFNN architektur:
+
 | Topologie | Popis |
 |:----------|:------|
-| Topologie 1 | 8 neuronů → 3 výstupy |
-| Topologie 2 | 16 neuronů → 8 neuronů → 3 výstupy |
-| Topologie 3 | 32 neuronů → 16 neuronů → 8 neuronů → 3 výstupy |
-| Topologie 4 | 64 neuronů → 32 neuronů → 16 neuronů → 8 neuronů → 3 výstupy |
-| Topologie 5 | 128 neuronů → 64 neuronů → 32 neuronů → 16 neuronů → 8 neuronů → 3 výstupy |
+| Topology_1 | 8 neuronů → výstupní vrstva |
+| Topology_2 | 16 neuronů → 8 neuronů → výstupní vrstva |
+| Topology_3 | 32 neuronů → 16 neuronů → 8 neuronů → výstupní vrstva |
+| Topology_4 | 64 neuronů → 32 neuronů → 16 neuronů → 8 neuronů → výstupní vrstva |
+| Topology_5 | 128 neuronů → 64 neuronů → 32 neuronů → 16 neuronů → 8 neuronů → výstupní vrstva |
 
-Každý model byl trénován 10krát s náhodnou inicializací vah.
+Každá architektura byla trénována 10krát pro stabilizaci vlivu náhodné inicializace vah.
 
 ---
 
 ## Výsledky
-- Pro každou topologii byla zaznamenána validační přesnost po trénování.
-- Výsledky byly shrnuty pomocí boxplot grafu:
 
-![Boxplot validační přesnosti](boxplot_val_accuracy.png)
+- Pro každou topologii byla zaznamenána validační přesnost.
+- Výsledky jsou zobrazeny pomocí boxplotu:
+
+![Boxplot validační přesnosti](./images/boxplot_val_accuracy.png)
 
 ---
 
 ## Nejlepší model
-- Nejvyšší medián validační přesnosti dosáhla topologie **[dosaď nejlepší]**.
-- Tento model byl následně natrénován na celé trénovací a validační sadě a uložen do souboru:
 
+- Nejlepší výsledky dosáhla topologie **Topology_5**.
+- Nejlepší model byl natrénován na trénovacích datech a ověřen na testovací sadě.
 
-
-### Vyhodnocení na testovacích datech:
-- **Test Loss:** `[doplnit hodnotu]`
-- **Test Accuracy:** `[doplnit hodnotu]`
+**Výsledky na testovacích datech:**
+- **Test Loss:** 0.0544
+- **Test Accuracy:** 0.9667
 
 ---
 
 ## Závěr
-- Bylo ověřeno, že architektura neuronové sítě výrazně ovlivňuje výslednou přesnost modelu.
-- Nejlepší topologie dosáhla testovací přesnosti **[doplnit]%**.
-- Uložení modelu a grafu umožňuje další analýzy a použití v budoucnu.
+- Složitější topologie s více vrstvami dosahují lepších výsledků na této klasifikační úloze.
+- Testovací přesnost 96,67 % ukazuje velmi dobré naučení modelu.
+- Pro menší dataset Iris byla dostačující i jednoduchá FFNN architektura.
+- Pro trénink byl použit CPU, což bylo pro rozsah úlohy dostatečné.
 
 ---

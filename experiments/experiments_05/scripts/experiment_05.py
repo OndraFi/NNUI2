@@ -12,8 +12,8 @@ import seaborn as sns
 
 def main():
     # Cesty
-    # DATA_DIR = 'C:/datasets/GTSRB'
-    DATA_DIR = '../data/GTSRB'
+    DATA_DIR = 'C:/datasets/GTSRB'
+    # DATA_DIR = '../data/GTSRB'
     MODELS_DIR = '../models'
     IMAGES_DIR = '../images'
 
@@ -23,7 +23,7 @@ def main():
 
     # Parametry
     batch_size = 128
-    epochs = 1
+    epochs = 2
     learning_rate = 0.001
     num_classes = 43
     num_workers = 1
@@ -54,24 +54,38 @@ def main():
     val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
     test_loader = torch.utils.data.DataLoader(test_data, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=True)
 
-    # Definice modelu
-    def build_model(topology):
+    # Definice CNN modelu
+    def build_cnn(topology):
         layers = []
-        input_dim = 32 * 32 * 3
-        for units in topology:
-            layers.append(nn.Linear(input_dim, units))
+        in_channels = 3
+        for out_channels, kernel_size in topology:
+            layers.append(nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=1))
             layers.append(nn.ReLU())
-            input_dim = units
-        layers.append(nn.Linear(input_dim, num_classes))
+            layers.append(nn.MaxPool2d(2))
+            in_channels = out_channels
+
+        model_features = nn.Sequential(*layers)
+
+        # Spočítáme automaticky velikost
+        with torch.no_grad():
+            dummy_input = torch.randn(1, 3, 32, 32)
+            output = model_features(dummy_input)
+            flatten_dim = output.shape[1] * output.shape[2] * output.shape[3]
+
+        layers.append(nn.Flatten())
+        layers.append(nn.Linear(flatten_dim, 128))
+        layers.append(nn.ReLU())
+        layers.append(nn.Linear(128, num_classes))
+
         return nn.Sequential(*layers)
 
-    # Topologie
+    # Topologie CNN
     architectures = [
-        [256],
-        [512, 256],
-        [1024, 512, 256],
-        [1024, 512, 256, 128],
-        [2048, 1024, 512, 256, 128]
+        [(32, 3)],
+        [(64, 3), (32, 3)],
+        [(128, 3), (64, 3)],
+        [(64, 3), (128, 3), (64, 3)],
+        [(128, 3), (128, 3), (64, 3)]
     ]
 
     # Trénink
@@ -83,28 +97,23 @@ def main():
         acc_list = []
         loss_list = []
 
-        start = time.perf_counter()  # Začátek měření času
+        start = time.perf_counter()
 
-        for run in range(10):
-            model = build_model(topology).to(device)
+        for run in range(5):
+            model = build_cnn(topology).to(device)
             criterion = nn.CrossEntropyLoss()
             optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
             # Tréninková smyčka
             for epoch in range(epochs):
-                epoch_start = time.perf_counter()  # Začátek měření času
                 model.train()
                 for inputs, labels in train_loader:
                     inputs, labels = inputs.to(device), labels.to(device)
-                    inputs = inputs.view(inputs.size(0), -1)
-
                     optimizer.zero_grad()
                     outputs = model(inputs)
                     loss = criterion(outputs, labels)
                     loss.backward()
                     optimizer.step()
-                epoch_end = time.perf_counter()  # Začátek měření času
-                print(f"[INFO] Trénink epochy {epoch + 1} trval {epoch_end - epoch_start:.2f} sekund.")
 
             # Validace
             model.eval()
@@ -114,7 +123,6 @@ def main():
             with torch.no_grad():
                 for inputs, labels in val_loader:
                     inputs, labels = inputs.to(device), labels.to(device)
-                    inputs = inputs.view(inputs.size(0), -1)
                     outputs = model(inputs)
                     loss = criterion(outputs, labels)
                     val_loss += loss.item()
@@ -127,7 +135,7 @@ def main():
             acc_list.append(acc)
             loss_list.append(avg_loss)
 
-        end = time.perf_counter()  # Konec měření času
+        end = time.perf_counter()
         print(f"[INFO] Trénink topologie {idx + 1} trval {end - start:.2f} sekund.")
 
         val_accuracies[f'Topology_{idx + 1}'] = acc_list
@@ -136,28 +144,28 @@ def main():
     # Boxploty
     plt.figure()
     plt.boxplot(val_accuracies.values(), labels=val_accuracies.keys())
-    plt.title('Boxplot validační přesnosti')
+    plt.title('Boxplot validační přesnosti (CNN)')
     plt.ylabel('Validační přesnost')
     plt.grid(True)
-    plt.savefig(os.path.join(IMAGES_DIR, 'boxplot_accuracy.png'))
+    plt.savefig(os.path.join(IMAGES_DIR, 'boxplot_cnn_accuracy.png'))
     plt.close()
 
     plt.figure()
     plt.boxplot(val_losses.values(), labels=val_losses.keys())
-    plt.title('Boxplot validační chyby (loss)')
+    plt.title('Boxplot validační chyby (loss) (CNN)')
     plt.ylabel('Validační loss')
     plt.grid(True)
-    plt.savefig(os.path.join(IMAGES_DIR, 'boxplot_loss.png'))
+    plt.savefig(os.path.join(IMAGES_DIR, 'boxplot_cnn_loss.png'))
     plt.close()
 
-    # Výběr nejlepší topologie
+    # Vyber nejlepší topologie
     best_topology_name = max(val_accuracies, key=lambda k: np.median(val_accuracies[k]))
     best_index = int(best_topology_name.split('_')[-1]) - 1
     best_topology = architectures[best_index]
 
     # Finální trénink nejlepšího modelu
     print(f"\n[INFO] Nejlepší topologie: {best_topology}")
-    model = build_model(best_topology).to(device)
+    model = build_cnn(best_topology).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
@@ -165,16 +173,14 @@ def main():
         model.train()
         for inputs, labels in train_loader:
             inputs, labels = inputs.to(device), labels.to(device)
-            inputs = inputs.view(inputs.size(0), -1)
-
             optimizer.zero_grad()
             outputs = model(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
 
-    # Uložení nejlepšího modelu
-    torch.save(model.state_dict(), os.path.join(MODELS_DIR, 'best_model.pt'))
+    # Uložení modelu
+    torch.save(model.state_dict(), os.path.join(MODELS_DIR, 'best_cnn_model.pt'))
 
     # Vyhodnocení na test datech
     model.eval()
@@ -183,7 +189,6 @@ def main():
     with torch.no_grad():
         for inputs, labels in test_loader:
             inputs, labels = inputs.to(device), labels.to(device)
-            inputs = inputs.view(inputs.size(0), -1)
             outputs = model(inputs)
             _, predicted = outputs.max(1)
             y_true.extend(labels.cpu().numpy())
@@ -197,10 +202,10 @@ def main():
     cm = confusion_matrix(y_true, y_pred)
     plt.figure(figsize=(12, 10))
     sns.heatmap(cm, annot=False, fmt='d', cmap='Blues')
-    plt.title('Confusion Matrix')
+    plt.title('Confusion Matrix (CNN)')
     plt.ylabel('Skutečné třídy')
     plt.xlabel('Predikované třídy')
-    plt.savefig(os.path.join(IMAGES_DIR, 'confusion_matrix.png'))
+    plt.savefig(os.path.join(IMAGES_DIR, 'confusion_matrix_cnn.png'))
     plt.close()
 
     print("\n[INFO] Skript úspěšně dokončen.")
