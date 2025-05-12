@@ -8,15 +8,6 @@
 
 ---
 
-## Použité knihovny
-- Python 3.11
-- TensorFlow 2.19 (běh na CPU)
-- Keras Sequential API
-- scikit-learn
-- matplotlib
-
----
-
 ## Úloha
 - Byla použita klasifikační úloha rozpoznávání květin pomocí datasetu Iris.
 - Úkolem bylo klasifikovat vzorek do jedné ze tří tříd na základě čtyř numerických atributů.

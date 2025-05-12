@@ -1,6 +1,6 @@
 # Experiment 04 – Trénink FFNN na GTSRB datasetu (PyTorch)
 
-## Úl
+## Zadání
 - Seznámení s tvorbou dopředné neuronové sítě (Feedforward Neural Network – FFNN) v PyTorch.
 - Návrh, trénování a vyhodnocení 5 různých architektur na klasifikační úlize (GTSRB).
 - Trénování každé architektury 10× pro vyrovnání vlivu náhodnosti.
@@ -10,9 +10,8 @@
 ## Parametry experimentu
 - Dataset: GTSRB (German Traffic Sign Recognition Benchmark)
 - Framework: PyTorch 2.7.0
-- Zařízení: GPU (NVIDIA RTX 3050)
 - Batch size: 128
-- Epochs: 1
+- Epochs: 10
 - Počet běhů každé topologie: 10
 
 ## Použité architektury (topologie)
@@ -25,15 +24,6 @@
 Každá síť končí plně propojenou vrstvou na 43 výstupních tříd.
 
 ## Výsledky trénování
-
-### Doby tréninku topologií
-- Topologie 1 ([256]): 236 sekund
-- Topologie 2 ([512, 256]): 230 sekund
-- Topologie 3 ([1024, 512, 256]): 230 sekund
-- Topologie 4 ([1024, 512, 256, 128]): 229 sekund
-- Topologie 5 ([2048, 1024, 512, 256, 128]): 231 sekund
-
-Průměrná doba tréninku jednoho běhu: cca 14–15 sekund.
 
 ### Boxploty
 Byly vytvořeny boxploty validační přesnosti a validační chyby (val_loss) přes 10 běhů pro každou architekturu.
@@ -55,15 +45,9 @@ Byly vytvořeny boxploty validační přesnosti a validační chyby (val_loss) p
 |:--------|:---------|
 | Accuracy | 58 % |
 
-**Poznámky:**
-- Některé třídy mají velmi nízkou přesnost (precision/recall blízké nule).
-- Nejlepší rozpoznávání bylo dosaženo u dominantních tříd jako třída 13, 9, 10 atd.
-- Menší třídy nebo špatně reprezentované třídy (např. 6, 19, 27) měly velmi nízké hodnoty.
-
 ## Pozorování
 - Nejmenší síť [256] byla zároveň nejstabilnější (malý rozptyl v boxplotu) a dosáhla nejlepšího výkonu.
 - Zvyšování velikosti sítě **nevedlo k lepším výsledkům**, což může být způsobeno omezenou velikostí trénovacích dat nebo přeučením větších modelů.
-- Trénink s `num_workers=1` byl **nejrychlejší**, protože GTSRB obsahuje malé obrázky a overhead při více workerech na Windows byl zbytečně velký.
 
 ## Shrnutí
 Experiment potvrdil, že pro GTSRB dataset a jednoduché FFNN sítě:
