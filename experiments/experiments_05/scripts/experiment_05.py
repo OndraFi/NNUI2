@@ -23,7 +23,7 @@ def main():
 
     # Parametry
     batch_size = 128
-    epochs = 2
+    epochs = 10
     learning_rate = 0.001
     num_classes = 43
     num_workers = 1
@@ -99,14 +99,17 @@ def main():
 
         start = time.perf_counter()
 
-        for run in range(5):
+        for run in range(10):
+            print(f"[INFO]   Běh {run + 1}/10")
             model = build_cnn(topology).to(device)
             criterion = nn.CrossEntropyLoss()
             optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
             # Tréninková smyčka
             for epoch in range(epochs):
+                print(f"[INFO]     Epoch {epoch + 1}/{epochs}")
                 model.train()
+                running_loss = 0.0
                 for inputs, labels in train_loader:
                     inputs, labels = inputs.to(device), labels.to(device)
                     optimizer.zero_grad()
@@ -114,6 +117,8 @@ def main():
                     loss = criterion(outputs, labels)
                     loss.backward()
                     optimizer.step()
+                    running_loss += loss.item()
+                print(f"[INFO]       Loss: {running_loss / len(train_loader):.4f}")
 
             # Validace
             model.eval()
@@ -134,6 +139,7 @@ def main():
             avg_loss = val_loss / len(val_loader)
             acc_list.append(acc)
             loss_list.append(avg_loss)
+            print(f"[INFO]     Val Accuracy: {acc:.4f}, Val Loss: {avg_loss:.4f}")
 
         end = time.perf_counter()
         print(f"[INFO] Trénink topologie {idx + 1} trval {end - start:.2f} sekund.")
@@ -170,6 +176,7 @@ def main():
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
     for epoch in range(epochs):
+        print(f"[INFO]   Final Epoch {epoch + 1}/{epochs}")
         model.train()
         for inputs, labels in train_loader:
             inputs, labels = inputs.to(device), labels.to(device)

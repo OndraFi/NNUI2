@@ -53,7 +53,7 @@ Každá architektura byla trénována 10krát pro stabilizaci vlivu náhodné in
 - Pro každou topologii byla zaznamenána validační přesnost.
 - Výsledky jsou zobrazeny pomocí boxplotu:
 
-![Boxplot validační přesnosti](./images/boxplot_val_accuracy.png)
+![Boxplot validační přesnosti](../images/boxplot_val_accuracy.png)
 
 ---
 
