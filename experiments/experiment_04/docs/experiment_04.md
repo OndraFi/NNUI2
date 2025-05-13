@@ -11,7 +11,7 @@
 - Dataset: GTSRB (German Traffic Sign Recognition Benchmark)
 - Framework: PyTorch 2.7.0
 - Batch size: 128
-- Epochs: 10
+- Epochs: 1
 - Počet běhů každé topologie: 10
 
 ## Použité architektury (topologie)
